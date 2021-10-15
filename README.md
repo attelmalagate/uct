@@ -1,6 +1,6 @@
 # uct
 ### Universal Conversion tool
-UCT is based on the Simple Web Framework, swf also available on GitHub.
+UCT is based on the Simple Web Framework, [swf](https://github.com/francoiscourt/swf) also available on GitHub.
 
 ### User interface
 No deviation from the user interface of the swf framework. UCT uses notably the editable table component developed espcially for this application: it avoids an additional form and allows for faster and easier data input.
