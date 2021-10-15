@@ -1,0 +1,681 @@
+<!-- 
+	Universal Conversion Tool, based on the Simple Web Framework
+	version: 1.1
+	license: Apache 2.0
+	author:  François Court
+	date: october 2021
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="francoiscourt">
+<meta 
+	name="description" 
+	content=
+		"Universal conversion tool of main units, pressure, temperature, flow, volume, unit price, with industrial gases oxygen, nitrogen, argon, CO2, helium, hydrogen"
+/>
+<base href="">
+<title>Universal Conversion Tool</title>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+
+<style>
+/* 
+ * Project specific css variables 
+ * This portion needs to be located before the template css file
+ * access to these variables in Javascript is receommened - through the getCSSVar/setCSSVar 
+ * functions in f1-utils.js
+ */  
+:root {
+  --headerh: 50px;
+  --footerh: 30px;
+  --paddingdef: 1px;
+  --navw: 150px;
+  --fontcolor: #262626;
+  --menucolor: #fafafa;
+}
+</style>
+<link rel="stylesheet" href="./../swf/swf-main.css?vswf=0d">
+<style>
+/* application specific styles */
+.tbcv {
+  width:100%; 
+  margin: auto;
+  border: none;
+  border-collapse: collapse;
+
+}
+
+.tbcv td {
+	cursor: default;
+	border: none;
+}
+.tbcv .tdtxt {
+	text-align: right;
+	width: 26%;
+	border: none;
+}
+.tbcv .tdval {
+	text-align: right;
+	width: 16%;
+	background:LemonChiffon;
+	cursor: pointer;
+	border: none;
+	font-weight:bold;
+}
+.tbcv .tdnul {
+	text-align: right;
+	width: 16%;
+	background:FloralWhite;
+	border: none;
+}
+.tbcv .td1 {
+	font-weight:bold; 
+	text-align: center;
+	background: LightGray;
+	font-size: 1.3em;//18px;
+	border: none;
+}
+.tbcv .td2 {
+	font-weight:bold; 
+	text-align: center;
+	font-size: 1.1em;//16px;
+	border: none;
+}
+/* override the default behavior */
+.f1-stacked-panel {
+	overflow: auto;
+}
+</style>
+
+</head>
+
+<body>
+	<!-- div blocking everyting else during page loading -->
+	<div id="block" style="position:absolute;top:var(--headerh);bottom:0px;left:0px;right:0px;background-color:white;z-index:500">
+	</div>
+	<!-- modal form test -->
+	<div id="testmodal" class="f1-modal-background">
+	  <div class="f1-modal" style="top: var(--headerh); right: 50px; width:165px">
+		<span class="f1-modal-close">&times;</span> -->
+		<label for="newval" style="font-size: 12px;">New value to convert</label>
+		<input type="text" name="newval" id="newval" value="" style="width: 130px;"><p id="newvalhint" style="font-size: 10px;"></p>
+		<input type="submit" id="btupdate" value="update">&nbsp;
+		<input type="submit" id="btcancel" value="cancel">
+	  </div>
+	</div>
+
+	<!-- modal menu -->
+	<div id="mainmenu" class="f1-modal-background">
+	  <div class="f1-modal f1-navw" style="border-radius: 5px;top: var(--headerh); right: 20px; padding: 0px 5px 0px 5px; width: var(--navw)">
+			<ul class="f1-menu-ul">
+				<li class="f1-menuitem tabselect" data-idtab="home">Home</li>
+				<li class="f1-menuitem tabselect" data-idtab="contact">Contact</li>
+				<hr class="f1-hr">
+				<li class="f1-menuitem tabselect" data-idtab="about" style="display:flex;align-items:center;justify-content: space-between;">
+					About
+					<svg class="f1-icon" style="">
+						<use href="./../swf/feather-sprite.svg#info"/>
+					</svg>			
+				</li>
+			</ul>
+	  </div>
+	</div>
+
+	<header id="f1ga_header" style="height:var(--headerh)">
+	<div class="f1-header">
+		<div style="padding:5px;" id="">
+			<img id="opener" src="../swf/hal-9000-032.png" class="switchnav f1-cu-pointer" title="bring me home, HAL"></img>
+		</div>
+		<div style="font-weight:bold;font-size:2em">Universal Conversion Tool</div>
+		<div style="padding:5px;" id="">
+			<svg class="f1-icon f1-menuitem f1-menu-show">
+				<use href="./../swf/feather-sprite.svg#menu"/>
+			</svg>			
+		</div>
+	</div>
+	</header>
+	<main id="f1ga_main" class="" style="visibility: visible;">
+	<div class="f1-wrap" style="">
+		<div class="f1-stacked-panel" id="home" style="padding:20px;background: white;">
+			<table class="tbcv" id="tbflow" style="float:left; width: 58%; background:FloralWhite;">
+				<tr>
+					<td colspan="5" class="td1">Volumes and Flows - All gases</td>
+				</tr>
+				<tr style="background: LightGray; border: none">
+					<td colspan="3" ></td>
+					<td class="tooltip" style="text-align: center;">normal</td>
+					<td class="tooltip" style="text-align: center;">standard</td>
+				</tr>
+				<tr>
+					<td class="tdtxt tooltip" data-id="f_gs_scfyear"></td>
+					<td class="tdval" id="f_gs_scfyear"></td>
+					<td class="tdtxt" data-id="f_gs_nm3year"></td>
+					<td class="tdval" id="f_gs_nm3year"></td>
+					<td class="tdval" id="f_gs_sm3year"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_gs_scfmonth"></td>
+					<td class="tdval" id="f_gs_scfmonth"></td>
+					<td class="tdtxt" data-id="f_gs_nm3month"></td>
+					<td class="tdval" id="f_gs_nm3month"></td>
+					<td class="tdval" id="f_gs_sm3month"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_gs_scfday"></td>
+					<td class="tdval" id="f_gs_scfday"></td>
+					<td class="tdtxt" data-id="f_gs_nm3day"></td>
+					<td class="tdval" id="f_gs_nm3day"></td>
+					<td class="tdval" id="f_gs_sm3day"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_gs_scfhour"></td>
+					<td class="tdval" id="f_gs_scfhour"></td>
+					<td class="tdtxt" data-id="f_gs_nm3hour"></td>
+					<td class="tdval" id="f_gs_nm3hour"></td>
+					<td class="tdval" id="f_gs_sm3hour"></td>
+				</tr>
+				<tr class="oxygen"></tr>
+				<tr>
+					<td class="tdtxt" data-id="f_o2_stpd"></td>
+					<td class="tdval" id="f_o2_stpd"></td>
+					<td class="tdtxt" data-id="f_o2_mtpd"></td>
+					<td class="tdval" id="f_o2_mtpd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_o2_gapd"></td>
+					<td class="tdval" id="f_o2_gapd"></td>
+					<td class="tdtxt" data-id="f_o2_lipd"></td>
+					<td class="tdval" id="f_o2_lipd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr class="nitrogen"></tr>
+				<tr>
+					<td class="tdtxt" data-id="f_n2_stpd"></td>
+					<td class="tdval" id="f_n2_stpd"></td>
+					<td class="tdtxt" data-id="f_n2_mtpd"></td>
+					<td class="tdval" id="f_n2_mtpd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_n2_gapd"></td>
+					<td class="tdval" id="f_n2_gapd"></td>
+					<td class="tdtxt" data-id="f_n2_lipd"></td>
+					<td class="tdval" id="f_n2_lipd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr class="argon"></tr>
+				<tr>
+					<td class="tdtxt" data-id="f_ar_stpd"></td>
+					<td class="tdval" id="f_ar_stpd"></td>
+					<td class="tdtxt" data-id="f_ar_mtpd"></td>
+					<td class="tdval" id="f_ar_mtpd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_ar_gapd"></td>
+					<td class="tdval" id="f_ar_gapd"></td>
+					<td class="tdtxt" data-id="f_ar_lipd"></td>
+					<td class="tdval" id="f_ar_lipd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr class="co2"></tr>
+				<tr>
+					<td class="tdtxt" data-id="f_co2_stpd"></td>
+					<td class="tdval" id="f_co2_stpd"></td>
+					<td class="tdtxt" data-id="f_co2_mtpd"></td>
+					<td class="tdval" id="f_co2_mtpd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_co2_gapd"></td>
+					<td class="tdval" id="f_co2_gapd"></td>
+					<td class="tdtxt" data-id="f_co2_lipd"></td>
+					<td class="tdval" id="f_co2_lipd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr class="hydrogen"></tr>
+				<tr>
+					<td class="tdtxt" data-id="f_h2_stpd"></td>
+					<td class="tdval" id="f_h2_stpd"></td>
+					<td class="tdtxt" data-id="f_h2_mtpd"></td>
+					<td class="tdval" id="f_h2_mtpd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_h2_gapd"></td>
+					<td class="tdval" id="f_h2_gapd"></td>
+					<td class="tdtxt" data-id="f_h2_lipd"></td>
+					<td class="tdval" id="f_h2_lipd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr class="helium"></tr>
+				<tr>
+					<td class="tdtxt" data-id="f_he_lbpd"></td>
+					<td class="tdval" id="f_he_lbpd"></td>
+					<td class="tdtxt" data-id="f_he_kgpd"></td>
+					<td class="tdval" id="f_he_kgpd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdtxt" data-id="f_he_gapd"></td>
+					<td class="tdval" id="f_he_gapd"></td>
+					<td class="tdtxt" data-id="f_he_lipd"></td>
+					<td class="tdval" id="f_he_lipd"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdnul"></td>
+					<td class="tdnul"></td>
+					<td class="tdtxt" data-id="f_he_isoyear"></td>
+					<td class="tdval" id="f_he_isoyear"></td>
+					<td class="tdnul"></td>
+				</tr>
+				<tr>
+					<td class="tdnul"></td>
+					<td class="tdnul"></td>
+					<td class="tdtxt" data-id="f_he_knm3year"></td>
+					<td class="tdval" id="f_he_knm3year"></td>
+					<td class="tdval" id="f_he_ksm3year"></td>
+				</tr>
+			</table>
+			
+			<div style="float:right; width: 40%; background: white; padding: 0px">
+				<table class="tbcv" id="tbflow" style="background:FloralWhite;">
+					<tr>
+						<td colspan="4" class="td1">Prices - All gases</td>
+					</tr>
+					<tr>
+						<td class="tdtxt" data-id="p_gs_hscf"></td>
+						<td class="tdval" id="p_gs_hscf"></td>
+						<td class="tdtxt" data-id="p_gs_nm3"></td>
+						<td class="tdval" id="p_gs_nm3"></td>
+					</tr>
+					<tr>
+						<td class="tdtxt" data-id="p_gs_kscf"></td>
+						<td class="tdval" id="p_gs_kscf"></td>
+						<td class="tdtxt" data-id="p_gs_sm3"></td>
+						<td class="tdval" id="p_gs_sm3"></td>
+					</tr>
+					<tr class="oxygen"></tr>
+					<tr>
+						<td class="tdtxt" data-id="p_o2_st"></td>
+						<td class="tdval" id="p_o2_st"></td>
+						<td class="tdtxt" data-id="p_o2_mt"></td>
+						<td class="tdval" id="p_o2_mt"></td>
+					</tr>
+					<tr class="nitrogen"></tr>
+					<tr>
+						<td class="tdtxt" data-id="p_n2_st"></td>
+						<td class="tdval" id="p_n2_st"></td>
+						<td class="tdtxt" data-id="p_n2_mt"></td>
+						<td class="tdval" id="p_n2_mt"></td>
+					</tr>
+					<tr class="argon"></tr>
+					<tr>
+						<td class="tdtxt" data-id="p_ar_st"></td>
+						<td class="tdval" id="p_ar_st"></td>
+						<td class="tdtxt" data-id="p_ar_mt"></td>
+						<td class="tdval" id="p_ar_mt"></td>
+					</tr>
+					<tr class="co2"></tr>
+					<tr>
+						<td class="tdtxt" data-id="p_co2_st"></td>
+						<td class="tdval" id="p_co2_st"></td>
+						<td class="tdtxt" data-id="p_co2_mt"></td>
+						<td class="tdval" id="p_co2_mt"></td>
+					</tr>
+					<tr>
+						<td class="tdtxt" data-id="p_co2_gal"></td>
+						<td class="tdval" id="p_co2_gal"></td>
+						<td class="tdtxt" data-id="p_co2_li"></td>
+						<td class="tdval" id="p_co2_li"></td>
+					</tr>
+					<tr class="hydrogen"></tr>
+					<tr>
+						<td class="tdtxt" data-id="p_h2_lb"></td>
+						<td class="tdval" id="p_h2_lb"></td>
+						<td class="tdtxt" data-id="p_h2_kg"></td>
+						<td class="tdval" id="p_h2_kg"></td>
+					</tr>
+					<tr class="helium"></tr>
+					<tr>
+						<td class="tdnul"></td>
+						<td class="tdnull"></td>
+						<td class="tdtxt" data-id="p_he_kg"></td>
+						<td class="tdval" id="p_he_kg"></td>
+					</tr>
+					<tr>
+						<td class="tdnul"></td>
+						<td class="tdnull"></td>
+						<td class="tdtxt" data-id="p_he_li"></td>
+						<td class="tdval" id="p_he_li"></td>
+					</tr>
+				</table>
+				<br>
+				<table class="tbcv" id="tbtemp" style="background:FloralWhite;">
+					<tr>
+						<td colspan="4" class="td1">Temperatures</td>
+					</tr>
+					<tr>
+						<td class="tdtxt" data-id="t_fahr"></td>
+						<td class="tdval" id="t_fahr"></td>
+						<td class="tdtxt" data-id="t_celsius"></td>
+						<td class="tdval" id="t_celsius"></td>
+					</tr>
+					<tr>
+						<td class="tdnul"></td>
+						<td class="tdnul"></td>
+						<td class="tdtxt" data-id="t_kelvin"></td>
+						<td class="tdval" id="t_kelvin"></td>
+					</tr>        
+				</table>
+				<br>
+				<table class="tbcv" id="tbpressure" style="background:FloralWhite;">
+					<tr>
+						<td colspan="4" class="td1">Pressures</td>
+					</tr>
+					<tr>
+						<td class="tdtxt" data-id="pr_inhg"></td>
+						<td class="tdval" id="pr_inhg"></td>
+						<td class="tdtxt" data-id="pr_atm"></td>
+						<td class="tdval" id="pr_atm"></td>
+					</tr>        
+					<tr>
+						<td class="tdtxt" data-id="pr_psi"></td>
+						<td class="tdval" id="pr_psi"></td>
+						<td class="tdtxt" data-id="pr_bar"></td>
+						<td class="tdval" id="pr_bar"></td>
+					</tr>
+					<tr>
+						<td class="tdnul"></td>
+						<td class="tdnul"></td>
+						<td class="tdtxt" data-id="pr_mbar"></td>
+						<td class="tdval" id="pr_mbar"></td>
+					</tr>
+				</table>
+
+			</div>
+		</div>
+
+		<div class="f1-stacked-panel" id="contact" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-contact.html?vswf=0d">
+		</div> 
+		<div class="f1-stacked-panel" id="about" style="background: white">
+			<div class="f1-inmenu-bar">
+				about
+				<svg class="f1-icon" style="">
+					<use href="./../swf/feather-sprite.svg#chevron-right"/>
+				</svg>			
+				<div class="f1-menuitem subtabselect" data-idsubtab="inabout-gui">Instructions</div>
+				<div class="f1-menuitem subtabselect" data-idsubtab="inabout-why">Why another conversion utility?</div>
+				<div class="f1-menuitem subtabselect" data-idsubtab="inabout-dev">For developers</div>
+				<div class="" style="flex:10"></div>
+				<div class="f1-menuitem subtabselect" data-idsubtab="inabout-lic" style="text-align:right;">License</div>
+			</div>
+			<div class="f1-inpanel" id="inabout-gui" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-guide.html?vswf=0d">Instructions</div>
+			<div class="f1-inpanel" id="inabout-why" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-why.html?vswf=0d">Why another conversion utility?</div>
+			<div class="f1-inpanel" id="inabout-dev" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-dev.html?vswf=0d">For developers</div>
+			<div class="f1-inpanel" id="inabout-lic" style="padding:10px;background:lightblue" data-imp-html="./../swf/swf-imp-license.html?vswf=0d"></div>
+		</div>
+	</div>
+	</main>
+	<nav id="f1ga_nav">
+	   <ul class="f1-menu-ul">
+			<li class="f1-menuitem tabselect" data-idtab="home">Home</li>
+			<li class="f1-menuitem tabselect" data-idtab="contact">Contact</li>
+			<li class="f1-menuitem tabselect" data-idtab="about" style="display:flex;align-items:center;justify-content: space-between;">
+				About
+				<svg class="f1-icon" style="">
+					<use href="./../swf/feather-sprite.svg#info"/>
+				</svg>			
+			</li>
+		</ul>
+	</nav>
+	<footer id="f1ga_footer">
+		<div class="f1-footer" style="position:relative">
+				<div class="f1-footer-left" ></div>
+				<div class="f1-footer-center" style="font-size:0.8em;">
+				a web app by <a href="mailto:attel@malagate.com">francoiscourt</a> - check also <a href="https://photos.malagate.com/piwigo/index.php?/category/37" target='_blank'> here</a>
+				</div>
+				<div class="f1-footer-right"></div>
+		</div>
+	</footer>
+	
+
+<script type="module">  
+
+import * as utils from './../swf/swf-utils.js';
+import * as uct from './uct-main.js';
+
+	// options
+	const nav_opt = {
+		HOVER:1,
+		CLICK:2, // switch nav panel on click main icon (top left)
+		CLOSE_ON_SEL:4, // nav panel hides after selecting a item
+		HIDDEN:8, //nav panel always hidden
+		HOME:16 //send back to home panel
+	}
+	var opt_nav=nav_opt.HIDDEN|nav_opt.HOME;//nav_opt.CLICK;// | nav_opt.CLOSE_ON_SEL;
+	// utilities
+	//var headerH, footerH, paddingDef;
+	var navW;
+	var idTout;
+	function getCSSVars() {
+		// get the values of the CSS variables 
+		navW=parseInt(utils.getCSSVar(':root', '--navw'));
+	}
+	function hideNav() {
+		utils.setCSSVar(':root', '--navw', '0px');
+		document.getElementById("f1ga_nav").style.visibility="hidden";
+		utils.setWidthByClassName("f1-navw", navW);
+	}
+	function showNav() {
+		utils.setCSSVar(':root', '--navw', navW+'px');
+		document.getElementById("f1ga_nav").style.visibility="visible";
+	}
+	function switchNav() {
+		if (opt_nav & nav_opt.HOME) {
+			utils.triggerClickBySelector("[data-idtab='home']");
+		}
+		if ((opt_nav & nav_opt.HIDDEN) != nav_opt.HIDDEN) {
+			var w=navW;
+			var navel=document.getElementById("f1ga_nav");
+			if (navel.style.visibility !== "hidden") {
+				w=0;
+				navel.style.visibility="hidden";
+				utils.setWidthByClassName("f1-navw", navW);
+			} 
+			else {
+				navel.style.visibility="visible";
+			}
+			utils.setCSSVar(':root', '--navw', w+'px');
+		}
+	}
+	
+	function sizeElements() {
+		// set body height to window.innerHeight (issue on Android mobile/tablet for 100vh)
+		document.body.style.height=window.innerHeight+"px";
+	}
+	
+	function selectDefault () {
+		utils.triggerClickBySelector("[data-idtab='home']");
+		utils.triggerClickBySelector("[data-idsubtab='inabout-gui']");	
+	}
+
+	// modal forms management functions
+	function openModal(e, el) {
+		document.getElementById("mainmenu").style.display="block";
+		$('.f1-modal').css("position", "absolute");
+	}
+	function closeModal() {
+		document.getElementById("mainmenu").style.display="none";
+	}
+	
+	var scrX, scrY;
+
+	function addDOMElements() {
+		// add the same 'gases' row everytime they're needed (ie in an ".gas" class element)
+		$(".oxygen").append('<td colspan="5" class="td2" style="background:LightSalmon">Oxygen</td>');
+		$(".nitrogen").append('<td colspan="5" class="td2" style="color: white; background:DarkRed">Nitrogen</td>');
+		$(".argon").append('<td colspan="5" class="td2" style="background:Teal">Argon</td>');
+		$(".co2").append('<td colspan="5" class="td2" style="background:Gray">CO2</td>');
+		$(".hydrogen").append('<td colspan="5" class="td2" style="color: white; background:#272727">Hydrogen</td>');
+		$(".helium").append('<td colspan="5" class="td2" style="color: white;background:SaddleBrown">Helium</td>');
+	}
+	addDOMElements();
+	// reset all values to 0
+	$('.tdval').text('0');
+	$('.tdval').attr('contenteditable', 'true');
+	// update the label from the xxx_cvdatas map
+	$('.tdtxt').each(function(index, value) {
+		var txtel = $(this);
+		var s=txtel.html();
+		txtel.html(s+uct.getDescription($(this).attr('data-id')));
+	});
+	uct.cvGas(document.getElementById("f_gs_nm3hour"), "100");	
+	uct.cvGas(document.getElementById("p_gs_nm3"), "0.9");	
+	uct.cvGas(document.getElementById("t_celsius"), "20");
+	uct.cvGas(document.getElementById("pr_atm"), "1 ");
+	
+	document.addEventListener("DOMContentLoaded", function() {
+		getCSSVars();
+		// debug
+		//fillTables();	
+		$(document).mousemove(function(e){
+			scrX=e.pageX;
+			scrY=e.pageY;
+		});
+		window.addEventListener('resize', function(){
+			sizeElements();
+		});
+		
+		$(".switchnav").click(function(){
+			switchNav();
+		});
+		// manages the tab selection menus
+		// there are two menus available to select which tab to display
+		// inside the main area:
+		// - one menu is located in the navigation panel on the side
+		// - the other is floating, accessed from the menu icon located in the right portion of the header
+		// the two menus are identical and remain synchronized (ie current selection in bold)
+		$(".tabselect").click(function(){
+			var idtab=$(this).attr("data-idtab");
+			$(".f1-stacked-panel").css("visibility", "hidden");
+			$(".f1-stacked-panel").css("z-index", "-1");
+			$("#"+idtab).css("visibility", "visible");
+			$("#"+idtab).css("z-index", "2");
+			$(".tabselect").css("font-weight", "normal");
+			$(".tabselect").css("cursor", "pointer");
+			$("[data-idtab='"+idtab+"']").css("font-weight", "bold");
+			$("[data-idtab='"+idtab+"']").css("cursor", "default");
+			if (opt_nav & nav_opt.CLOSE_ON_SEL) {
+				hideNav();
+			}
+		});
+		$(".subtabselect").click(function() {
+			var idsubtab=$(this).attr("data-idsubtab");
+			$(this).css("font-weight", "bold");
+			$(this).css("cursor", "default");
+			$(this).siblings(".subtabselect").css("font-weight", "normal");
+			$(this).siblings(".subtabselect").css("cursor", "pointer");
+			$("#"+idsubtab).siblings(".f1-inpanel").css("visibility", "hidden");
+			$("#"+idsubtab).siblings(".f1-inpanel").css("z-index", "-1");
+			$("#"+idsubtab).css("visibility", "visible");
+			$("#"+idsubtab).css("z-index", "1");
+			// hide/show other related items on the in-menu bar
+			$(this).siblings("div[data-id]").css("display","none");
+			$(this).siblings("div[data-id='"+idsubtab+"']").css("display","block");
+		});
+		$(".switchnav").hover(function(){
+			// hover in
+			if (opt_nav == nav_opt.HOVER) {
+				clearTimeout(idTout);
+				showNav();
+			}
+		}, function() {
+			// hover out
+			if (opt_nav == nav_opt.HOVER) {
+				clearTimeout(idTout);
+				idTout=setTimeout(function() {
+					hideNav();
+				}, 1000);
+			}
+		});
+		$("#f1ga_nav").hover(function(){
+			// hover in
+			if (opt_nav == nav_opt.HOVER) {
+				clearTimeout(idTout);
+			}
+		}, function() {
+			// hover out
+			if (opt_nav == nav_opt.HOVER) {
+				clearTimeout(idTout);
+				idTout=setTimeout(function() {
+					hideNav();
+				}, 1000);
+			}
+		});
+		// modal dialog management
+		$(".f1-modal-background").click(function(e){
+			closeModal();
+		});
+		$(".f1-menu-show").click(function(e){
+			openModal(e, $(this));
+		});
+		// When the user clicks on <span> (x), close the modal
+		$(".f1-modal-close").click(function(){
+			closeModal();
+		});
+		$("#btcancel").click(function(){
+			closeModal();
+		});
+		$("#btupdate").click(function(){
+			closeModal();
+		});		
+
+		// management of editable tables; everything is managed in the class
+		// including the invocation of the listener to click and keydown events
+		function onUpdate(elt) {
+			console.log(elt.textContent);
+			if (uct.cvGas(elt, elt.textContent) == false) {
+				elt.textContent = "conversion error";
+			}
+		}
+		var tbed=new utils._edtb(onUpdate);
+
+		//manage HTML imports
+		var tokens =[{
+			token: "{{name}}",
+			value: "Fran&#xE7;ois Court"
+		},{
+			token: "{{email}}",
+			value: "attel@malagate.com"
+		},{
+			token: "{{year}}",
+			value: "2021"
+		}];
+		utils.importsHTML(tokens);
+		
+		if (opt_nav & nav_opt.HIDDEN) {
+			hideNav();
+		}
+		// validation of the default selected panels
+		selectDefault();
+		sizeElements();
+		// hide the blocking div now that the page is loaded
+		document.getElementById("block").classList.add('f1-slow-hide');
+		console.log(utils.version());
+		console.log(uct.version());
+	});
+	
+	
+</script>
+</body> 
+</html>

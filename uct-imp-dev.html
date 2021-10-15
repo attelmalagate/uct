@@ -1,0 +1,51 @@
+<h2>For developers</h2>
+<p>
+UCT is based on the Simple Web Framework. Both <a href="https://github.com/francoiscourt/uct" target="_blank">uct</a> 
+and <a href="https://github.com/francoiscourt/swf" target="_blank">swf</a> are available on GitHub.
+</p>
+
+<h3>User interface</h3>
+<p>
+No deviation from the user interface of the framework. UCT uses notably the editable table component developed espcially for this 
+application: it avoids an additional form and allows for faster and easier data input.
+</p>
+<p>
+The options for navigation are <code>hidden</code> and <code>home</code>, that is to say that the navigation
+panel on the left remains hidden and that the image in the left part of the header redirects to the home panel.
+</p>
+
+<h3>Conversion</h3>
+<p>
+Conversions are managed in the <code>uct-main</code> javascript module. 
+</p>
+<p style="margin:0">
+Each conversion table is represented by a <code>map object</code>, using a unique alphanumeric
+identifier to represent the nature of the values to convert, for example <code>f_o2_gapd</code> for an oxygen flow in gallons per day,
+<code>p_ar_mt</code> for the price of argon per metric ton or <code>pr_mbar</code> for a pressure in millibar. The unique identifier 
+is associated with a <code>cvp</code> object, defined by
+</p>
+<ul style="margin:0"> 
+	<li>a conversion factor,</li>
+	<li>a format (to represent the value),</li>
+	<li>a description (used in the user interface) and</li>
+	<li>an optional minimun value (for temperatures).</li>
+</ul>
+<p>
+For a given conversion map, an identifier is chosen as the reference, with a conversion factor of 1 (one) and
+all the other conversion factors are calculated based on the reference. The unique id is also used in the corresponding html table to identify
+each cell to update through a <code>data-id</code> attribute of the corresponding <code>td</code> element.
+</p>
+<p style="margin-bottom:0">
+The conversion itself takes place in the <code>cvGas</code> function, with a straightforward algorithm: 
+</p>
+<ul style="margin-top:0">
+	<li>
+	for the cell being modified, a base conversion factor is calculated from the new value entered by the user and its conversion factor in the conversion map
+	</li>
+	<li>
+	the base conversion factor is then used to update all the other cells in the table
+	</li>
+	<li>
+	in the case of temperatures, a specific step is added to manage the offsets corresponding to the value 0 (zero)
+	</li>
+</ul>
