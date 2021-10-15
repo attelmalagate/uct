@@ -28,6 +28,8 @@ from swf
 - swf-main.css
 - swf-utils.js
 - hal-9000-032.png
+
 from Feather
 - feather-sprite.svg
-and JQuery 3.6 (probably works with older version)
+
+and JQuery 3.6 (most certainly works with older versions)
