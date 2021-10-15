@@ -22,3 +22,12 @@ The conversion itself takes place in the `cvGas` function, with a straightforwar
 - for the cell being modified, a base conversion factor is calculated from the new value entered by the user and its conversion factor in the conversion map
 - the base conversion factor is then used to update all the other cells in the table
 - in the case of temperatures, a specific step is added to manage the offsets corresponding to the value 0 (zero)
+
+### Dependencies
+from swf
+- swf-main.css
+- swf-utils.js
+- hal-9000-032.png
+from Feather
+- feather-sprite.svg
+and JQuery 3.6 (probably works with older version)
