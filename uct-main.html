@@ -449,10 +449,11 @@
 	</footer>
 	
 
-<script type="module">  
+<script type="module">
 
 import * as utils from './../swf/swf-utils.js';
 import * as uct from './uct-main.js';
+import * as tb from './../swf/swf-edtb.js';
 
 	// options
 	const nav_opt = {
@@ -647,7 +648,7 @@ import * as uct from './uct-main.js';
 				elt.textContent = "conversion error";
 			}
 		}
-		var tbed=new utils._edtb(onUpdate);
+		var tbed=new tb._edtb(onUpdate, {toutMax: 4000});
 
 		//manage HTML imports
 		var tokens =[{
@@ -672,6 +673,7 @@ import * as uct from './uct-main.js';
 		document.getElementById("block").classList.add('f1-slow-hide');
 		console.log(utils.version());
 		console.log(uct.version());
+		console.log(tb.version());
 	});
 	
 	
