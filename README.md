@@ -27,6 +27,8 @@ The conversion itself takes place in the `cvGas` function, with a straightforwar
 from swf
 - swf-main.css
 - swf-utils.js
+- swf-edtb.js
+- feather-sprite-circled.svg (developped from Feather's svg icons, to add a background circle)
 - hal-9000-032.png
 
 from Feather
