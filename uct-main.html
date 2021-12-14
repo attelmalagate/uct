@@ -1,6 +1,6 @@
 <!-- 
 	Universal Conversion Tool, based on the Simple Web Framework
-	version: 1.1
+	version: 1.2
 	license: Apache 2.0
 	author:  François Court
 	date: october 2021
@@ -41,7 +41,7 @@
   --menucolor: #fafafa;
 }
 </style>
-<link rel="stylesheet" href="./../swf/swf-main.css?vswf=0d">
+<link rel="stylesheet" href="./../swf/swf-main.css?vswf=0e">
 <style>
 /* application specific styles */
 .tbcv {
@@ -135,7 +135,7 @@
 		</div>
 		<div style="font-weight:bold;font-size:2em">Universal Conversion Tool</div>
 		<div style="padding:5px;" id="">
-			<svg class="f1-icon f1-menuitem f1-menu-show">
+			<svg class="f1-icon f1-menuitem f1-menu-show" data-idmenu="mainmenu">
 				<use href="./../swf/feather-sprite.svg#menu"/>
 			</svg>			
 		</div>
@@ -150,11 +150,11 @@
 				</tr>
 				<tr style="background: LightGray; border: none">
 					<td colspan="3" ></td>
-					<td class="tooltip" style="text-align: center;">normal</td>
-					<td class="tooltip" style="text-align: center;">standard</td>
+					<td style="text-align: center;">normal</td>
+					<td style="text-align: center;">standard</td>
 				</tr>
 				<tr>
-					<td class="tdtxt tooltip" data-id="f_gs_scfyear"></td>
+					<td class="tdtxt" data-id="f_gs_scfyear"></td>
 					<td class="tdval" id="f_gs_scfyear"></td>
 					<td class="tdtxt" data-id="f_gs_nm3year"></td>
 					<td class="tdval" id="f_gs_nm3year"></td>
@@ -405,7 +405,7 @@
 			</div>
 		</div>
 
-		<div class="f1-stacked-panel" id="contact" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-contact.html?vswf=0d">
+		<div class="f1-stacked-panel" id="contact" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-contact.html?vswf=0e">
 		</div> 
 		<div class="f1-stacked-panel" id="about" style="background: white">
 			<div class="f1-inmenu-bar">
@@ -419,10 +419,10 @@
 				<div class="" style="flex:10"></div>
 				<div class="f1-menuitem subtabselect" data-idsubtab="inabout-lic" style="text-align:right;">License</div>
 			</div>
-			<div class="f1-inpanel" id="inabout-gui" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-guide.html?vswf=0d">Instructions</div>
-			<div class="f1-inpanel" id="inabout-why" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-why.html?vswf=0d">Why another conversion utility?</div>
-			<div class="f1-inpanel" id="inabout-dev" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-dev.html?vswf=0d">For developers</div>
-			<div class="f1-inpanel" id="inabout-lic" style="padding:10px;background:lightblue" data-imp-html="./../swf/swf-imp-license.html?vswf=0d"></div>
+			<div class="f1-inpanel" id="inabout-gui" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-guide.html?vswf=0e">Instructions</div>
+			<div class="f1-inpanel" id="inabout-why" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-why.html?vswf=0e">Why another conversion utility?</div>
+			<div class="f1-inpanel" id="inabout-dev" style="padding:10px;background:AliceBlue" data-imp-html="./uct-imp-dev.html?vswf=0e">For developers</div>
+			<div class="f1-inpanel" id="inabout-lic" style="padding:10px;background:lightblue" data-imp-html="./../swf/swf-imp-license.html?vswf=0e"></div>
 		</div>
 	</div>
 	</main>
@@ -448,234 +448,8 @@
 		</div>
 	</footer>
 	
+<script type="module" charset="utf-8" src="./uct-main.js"></script>
 
-<script type="module">
-
-import * as utils from './../swf/swf-utils.js';
-import * as uct from './uct-main.js';
-import * as tb from './../swf/swf-edtb.js';
-
-	// options
-	const nav_opt = {
-		HOVER:1,
-		CLICK:2, // switch nav panel on click main icon (top left)
-		CLOSE_ON_SEL:4, // nav panel hides after selecting a item
-		HIDDEN:8, //nav panel always hidden
-		HOME:16 //send back to home panel
-	}
-	var opt_nav=nav_opt.HIDDEN|nav_opt.HOME;//nav_opt.CLICK;// | nav_opt.CLOSE_ON_SEL;
-	// utilities
-	var navW;
-	var idTout;
-	function getCSSVars() {
-		// get the values of the CSS variables 
-		navW=parseInt(utils.getCSSVar(':root', '--navw'));
-	}
-	function hideNav() {
-		utils.setCSSVar(':root', '--navw', '0px');
-		document.getElementById("f1ga_nav").style.visibility="hidden";
-		utils.setWidthByClassName("f1-navw", navW);
-	}
-	function showNav() {
-		utils.setCSSVar(':root', '--navw', navW+'px');
-		document.getElementById("f1ga_nav").style.visibility="visible";
-	}
-	function switchNav() {
-		if (opt_nav & nav_opt.HOME) {
-			utils.triggerClickBySelector("[data-idtab='home']");
-		}
-		if ((opt_nav & nav_opt.HIDDEN) != nav_opt.HIDDEN) {
-			var w=navW;
-			var navel=document.getElementById("f1ga_nav");
-			if (navel.style.visibility !== "hidden") {
-				w=0;
-				navel.style.visibility="hidden";
-				utils.setWidthByClassName("f1-navw", navW);
-			} 
-			else {
-				navel.style.visibility="visible";
-			}
-			utils.setCSSVar(':root', '--navw', w+'px');
-		}
-	}
-	
-	function sizeElements() {
-		// set body height to window.innerHeight (issue on Android mobile/tablet for 100vh)
-		document.body.style.height=window.innerHeight+"px";
-	}
-	
-	function selectDefault () {
-		utils.triggerClickBySelector("[data-idtab='home']");
-		utils.triggerClickBySelector("[data-idsubtab='inabout-gui']");	
-	}
-
-	// modal forms management functions
-	function openModal(e, el) {
-		document.getElementById("mainmenu").style.display="block";
-		$('.f1-modal').css("position", "absolute");
-	}
-	function closeModal() {
-		document.getElementById("mainmenu").style.display="none";
-	}
-	
-	var scrX, scrY;
-
-	function addDOMElements() {
-		// add the same 'gases' row everytime they're needed (ie in an ".gas" class element)
-		$(".oxygen").append('<td colspan="5" class="td2" style="background:LightSalmon">Oxygen</td>');
-		$(".nitrogen").append('<td colspan="5" class="td2" style="color: white; background:DarkRed">Nitrogen</td>');
-		$(".argon").append('<td colspan="5" class="td2" style="background:Teal">Argon</td>');
-		$(".co2").append('<td colspan="5" class="td2" style="background:Gray">CO2</td>');
-		$(".hydrogen").append('<td colspan="5" class="td2" style="color: white; background:#272727">Hydrogen</td>');
-		$(".helium").append('<td colspan="5" class="td2" style="color: white;background:SaddleBrown">Helium</td>');
-	}
-	addDOMElements();
-	// reset all values to 0
-	$('.tdval').text('0');
-	$('.tdval').attr('contenteditable', 'true');
-	// update the label from the xxx_cvdatas map
-	$('.tdtxt').each(function(index, value) {
-		var txtel = $(this);
-		var s=txtel.html();
-		txtel.html(s+uct.getDescription($(this).attr('data-id')));
-	});
-	uct.cvGas(document.getElementById("f_gs_nm3hour"), "100");	
-	uct.cvGas(document.getElementById("p_gs_nm3"), "0.9");	
-	uct.cvGas(document.getElementById("t_celsius"), "20");
-	uct.cvGas(document.getElementById("pr_atm"), "1 ");
-	
-	document.addEventListener("DOMContentLoaded", function() {
-		getCSSVars();
-		// debug
-		//fillTables();	
-		$(document).mousemove(function(e){
-			scrX=e.pageX;
-			scrY=e.pageY;
-		});
-		window.addEventListener('resize', function(){
-			sizeElements();
-		});
-		
-		$(".switchnav").click(function(){
-			switchNav();
-		});
-		// manages the tab selection menus
-		// there are two menus available to select which tab to display
-		// inside the main area:
-		// - one menu is located in the navigation panel on the side
-		// - the other is floating, accessed from the menu icon located in the right portion of the header
-		// the two menus are identical and remain synchronized (ie current selection in bold)
-		$(".tabselect").click(function(){
-			var idtab=$(this).attr("data-idtab");
-			$(".f1-stacked-panel").css("visibility", "hidden");
-			$(".f1-stacked-panel").css("z-index", "-1");
-			$("#"+idtab).css("visibility", "visible");
-			$("#"+idtab).css("z-index", "2");
-			$(".tabselect").css("font-weight", "normal");
-			$(".tabselect").css("cursor", "pointer");
-			$("[data-idtab='"+idtab+"']").css("font-weight", "bold");
-			$("[data-idtab='"+idtab+"']").css("cursor", "default");
-			if (opt_nav & nav_opt.CLOSE_ON_SEL) {
-				hideNav();
-			}
-		});
-		$(".subtabselect").click(function() {
-			var idsubtab=$(this).attr("data-idsubtab");
-			$(this).css("font-weight", "bold");
-			$(this).css("cursor", "default");
-			$(this).siblings(".subtabselect").css("font-weight", "normal");
-			$(this).siblings(".subtabselect").css("cursor", "pointer");
-			$("#"+idsubtab).siblings(".f1-inpanel").css("visibility", "hidden");
-			$("#"+idsubtab).siblings(".f1-inpanel").css("z-index", "-1");
-			$("#"+idsubtab).css("visibility", "visible");
-			$("#"+idsubtab).css("z-index", "1");
-			// hide/show other related items on the in-menu bar
-			$(this).siblings("div[data-id]").css("display","none");
-			$(this).siblings("div[data-id='"+idsubtab+"']").css("display","block");
-		});
-		$(".switchnav").hover(function(){
-			// hover in
-			if (opt_nav == nav_opt.HOVER) {
-				clearTimeout(idTout);
-				showNav();
-			}
-		}, function() {
-			// hover out
-			if (opt_nav == nav_opt.HOVER) {
-				clearTimeout(idTout);
-				idTout=setTimeout(function() {
-					hideNav();
-				}, 1000);
-			}
-		});
-		$("#f1ga_nav").hover(function(){
-			// hover in
-			if (opt_nav == nav_opt.HOVER) {
-				clearTimeout(idTout);
-			}
-		}, function() {
-			// hover out
-			if (opt_nav == nav_opt.HOVER) {
-				clearTimeout(idTout);
-				idTout=setTimeout(function() {
-					hideNav();
-				}, 1000);
-			}
-		});
-		// modal dialog management
-		$(".f1-modal-background").click(function(e){
-			closeModal();
-		});
-		$(".f1-menu-show").click(function(e){
-			openModal(e, $(this));
-		});
-		// When the user clicks on <span> (x), close the modal
-		$(".f1-modal-close").click(function(){
-			closeModal();
-		});
-		$("#btcancel").click(function(){
-			closeModal();
-		});
-		$("#btupdate").click(function(){
-			closeModal();
-		});		
-
-		// management of editable tables; everything is managed in the class
-		// including the invocation of the listener to click and keydown events
-		function onUpdate(elt) {
-			console.log(elt.textContent);
-			if (uct.cvGas(elt, elt.textContent) == false) {
-				elt.textContent = "conversion error";
-			}
-		}
-		var tbed=new tb._edtb(onUpdate, {toutMax: 4000});
-
-		//manage HTML imports
-		var tokens =[{
-			token: "{{name}}",
-			value: "Fran&#xE7;ois Court"
-		},{
-			token: "{{email}}",
-			value: "attel@malagate.com"
-		},{
-			token: "{{year}}",
-			value: "2021"
-		}];
-		utils.importsHTML(tokens);
-		
-		if (opt_nav & nav_opt.HIDDEN) {
-			hideNav();
-		}
-		// validation of the default selected panels
-		selectDefault();
-		sizeElements();
-		// hide the blocking div now that the page is loaded
-		document.getElementById("block").classList.add('f1-slow-hide');
-		console.log(utils.version());
-		console.log(uct.version());
-		console.log(tb.version());
-	});
-	
 	
 </script>
 </body> 
