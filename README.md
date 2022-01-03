@@ -33,5 +33,3 @@ from swf
 
 from Feather
 - feather-sprite.svg
-
-and JQuery 3.6 (most certainly works with older versions)
